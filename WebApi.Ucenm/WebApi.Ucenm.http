@@ -1,0 +1,6 @@
+@WebApi.Ucenm_HostAddress = http://localhost:5188
+
+GET {{WebApi.Ucenm_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
