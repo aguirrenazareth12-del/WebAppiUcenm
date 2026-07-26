@@ -9,10 +9,10 @@ namespace Productos.Application.Interfaces
 {
     public interface IProductosService
     {
-        Task<List<ProductoDTOs>> ObtenerProductos();
-        Task<ProductoDTOs> ObtenerProductoPorId(int id);
-        Task AgregarProductoAsync(CrearProductoDTOs producto);
-        Task ActualizarProductoAsync(ActualizarProductoDTOs producto);
-        Task<int> GuardarCambiosAsync();
+        Task<IReadOnlyCollection<ProductoDTOs>> ObtenerTodosAsync(CancellationToken cancellationToken = default);
+        Task <ProductoDTOs> ObtenerProductoPorId(int id, CancellationToken cancellationToken = default);
+        Task <ProductoDTOs> AgregarProductosAsync(CrearProductoDTOs producto, CancellationToken cancellationToken = default);
+        Task <ProductoDTOs> ActualizarProductosAsync(ActualizarProductoDTOs producto, CancellationToken cancellationToken= default);
+        Task<ProductoDTOs> EliminarProductosAsync(int id, CancellationToken cancellationToken = default);
     }
 }

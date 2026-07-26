@@ -7,10 +7,14 @@ namespace Productos.Application.Interfaces
 {
     public interface IProductoRepository
     {
-        Task<List<Producto>> ObtenerProductos();
-        Task<Producto> ObtenerProductoPorId(int id);
-        Task AgregarProductoAsync(Producto producto);
-        Task ActualizarProductoAsync(Producto producto);
-        Task<int> GuardarCambiosAsync();
+        Task<IReadOnlyCollection<Producto>> ObtenerTodosAsync(
+            CancellationToken cancellationToken = default
+            );
+        Task<Producto> ObtenerProductoPorId(string Codigo, CancellationToken cancellationToken = default);
+        Task AgregarProductoAsync(Producto producto, CancellationToken cancellationToken = default);
+        Task ActualizarProductoAsync(Producto producto, CancellationToken cancellationToken= default);
+        Task<int> GuardarCambiosAsync(CancellationToken cancellationToken = default);
+        Task ObtenerProductoPorId(object codigo, CancellationToken cancellationToken);
+        void EliminarProductoAsync(object producto, CancellationToken cancellationToken);
     }
 }
