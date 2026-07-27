@@ -20,11 +20,11 @@ namespace Productos.Application.Services
 
         #region Implementation of IProductosService
 
-        public async Task<ProductoDTOs> AgregarProductoAsync(CrearProductoDTOs producto, CancellationToken cancellationToken = default)
+        public async Task<ProductoDTOs> AgregarProductosAsync(CrearProductoDTOs producto, CancellationToken cancellationToken = default)
         {
             var nuevoProducto = new Producto
             {
-                Nombre = producto.Nombre,
+                Nombre =(string) producto.Nombre,
                 Precio = producto.Precio,
                 Existencia = producto.Existencia,
             };
@@ -35,9 +35,13 @@ namespace Productos.Application.Services
             return new ProductoDTOs
             {
                 Id = nuevoProducto.Id,
+                Codigo = nuevoProducto.Codigo,
                 Nombre = nuevoProducto.Nombre,
                 Precio = nuevoProducto.Precio,
                 Existencia = nuevoProducto.Existencia,
+                Activo = nuevoProducto.Activo,
+                FechaCreacion = nuevoProducto.FechaCreacion,
+                FechaModificacion = nuevoProducto.FechaModificacion
             };
         }
 
@@ -48,9 +52,10 @@ namespace Productos.Application.Services
                 throw new ArgumentOutOfRangeException(nameof(id), "El ID del producto debe ser mayor que cero.");
             }
 
-            var producto = await _productoRepository.ObtenerProductoPorId(id, cancellationToken);
+            // Convertimos el id a string si tu repositorio busca por Codigo
+            var producto = await _productoRepository.ObtenerProductoPorId(id.ToString(), cancellationToken);
 
-            if (producto == null) return null;
+            if (producto == null) return null!;
 
             return new ProductoDTOs
             {
@@ -91,11 +96,12 @@ namespace Productos.Application.Services
                 throw new ArgumentNullException(nameof(producto));
             }
 
-            var productoExistente = await _productoRepository.ObtenerProductoPorId(producto.Id, cancellationToken);
+            // ActualizarProductoDTOs usa 'Codigo' (string) en lugar de 'Id'
+            var productoExistente = await _productoRepository.ObtenerProductoPorId(producto.Codigo, cancellationToken);
 
             if (productoExistente == null)
             {
-                throw new ArgumentException($"No se encontró un producto con el ID {producto.Id}.", nameof(producto));
+                throw new ArgumentException($"No se encontró un producto con el código {producto.Codigo}.", nameof(producto.Codigo));
             }
 
             productoExistente.Nombre = producto.Nombre;
@@ -123,16 +129,16 @@ namespace Productos.Application.Services
         {
             if (id <= 0)
             {
-                throw new ArgumentException("El ID del producto debe ser mayor que cero.", nameof(id));
+                throw new ArgumentOutOfRangeException(nameof(id), "El ID del producto debe ser mayor que cero.");
             }
 
-            var producto = await _productoRepository.ObtenerProductoPorId(id, cancellationToken);
+            var producto = await _productoRepository.ObtenerProductoPorId(id.ToString(), cancellationToken);
             if (producto == null)
             {
                 throw new ArgumentException($"No se encontró un producto con el ID {id}.", nameof(id));
             }
 
-            await _productoRepository.EliminarProductoAsync(producto, cancellationToken);
+            _productoRepository.EliminarProductoAsync(producto, cancellationToken);
             await _productoRepository.GuardarCambiosAsync(cancellationToken);
 
             return new ProductoDTOs
